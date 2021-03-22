@@ -51,7 +51,14 @@ module.exports = {
         name: `assets`,
         path: `${__dirname}/content/assets`,
       },
+      options: {
+        name: `src`,
+        path: `${__dirname}/src/apis`,
+      },
     },
+
+    // The following plugin is required if you want to use markdown files.
+    `gatsby-transformer-remark`,
 
     /**
      * The following two plugins are required if you want to use Gatsby image
