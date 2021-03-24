@@ -1,9 +1,25 @@
 const path = require(`path`)
 const chunk = require(`lodash/chunk`)
+const { createFilePath } = require(`gatsby-source-filesystem`)
 
 // This is a simple debugging tool
 // dd() will prettily dump to the terminal and kill the process
 // const { dd } = require(`dumper.js`)
+
+/**
+ * Create slug node fields for markdown files.
+ */
+exports.onCreateNode = ({ node, getNode, actions }) => {
+  const { createNodeField } = actions
+  if (node.internal.type === `MarkdownRemark`) {
+    const slug = createFilePath({ node, getNode, basePath: `apis` })
+    createNodeField({
+      node,
+      name: `slug`,
+      value: slug,
+    })
+  }
+}
 
 /**
  * exports.createPages is a built-in Gatsby Node API.
@@ -17,14 +33,24 @@ exports.createPages = async gatsbyUtilities => {
 
   // If there are no posts in WordPress, don't do anything
   if (!posts.length) {
-    return
+    // return
+  } else {
+    // If there are posts, create pages for them
+    await createIndividualBlogPostPages({ posts, gatsbyUtilities })
+
+    // And a paginated archive
+    await createBlogPostArchive({ posts, gatsbyUtilities })
   }
 
-  // If there are posts, create pages for them
-  await createIndividualBlogPostPages({ posts, gatsbyUtilities })
+  // Query our posts from the GraphQL server
+  const mds = await getMds(gatsbyUtilities)
 
-  // And a paginated archive
-  await createBlogPostArchive({ posts, gatsbyUtilities })
+  if (!mds.length) {
+    return
+  } else {
+    // If there are markdown files, create pages for them
+    await createMdPages({ mds, gatsbyUtilities })
+  }
 }
 
 /**
@@ -54,6 +80,29 @@ const createIndividualBlogPostPages = async ({ posts, gatsbyUtilities }) =>
           // We also use the next and previous id's to query them and add links!
           previousPostId: previous ? previous.id : null,
           nextPostId: next ? next.id : null,
+        },
+      })
+    )
+  )
+
+const createMdPages = async ({ mds, gatsbyUtilities }) =>
+  Promise.all(
+    mds.map(({ node }) =>
+      // createPage is an action passed to createPages
+      // See https://www.gatsbyjs.com/docs/actions#createPage for more info
+      gatsbyUtilities.actions.createPage({
+        // Use the slug of markdown file as the Gatsby page path
+        // This is a good idea so that internal links and menus work 👍
+        path: node.fields.slug,
+
+        // use the blog post template as the page component
+        component: path.resolve(`./src/templates/md-page.js`),
+
+        // `context` is available in the template as a prop and
+        // as a variable in GraphQL.
+        context: {
+          // we need to add the slug of markdown file here
+          slug: node.fields.slug,
         },
       })
     )
@@ -163,4 +212,34 @@ async function getPosts({ graphql, reporter }) {
   }
 
   return graphqlResult.data.allWpPost.edges
+}
+
+/**
+ * This function queries Gatsby's GraphQL server and asks for
+ * All markdown files. If there are any GraphQL error it throws an error
+ * Otherwise it will return the posts 🙌
+ */
+async function getMds({ graphql, reporter }) {
+  const graphqlResult = await graphql(/* GraphQL */ `
+    query MdPages {
+      allMarkdownRemark {
+        edges {
+          node {
+            fields {
+              slug
+            }
+          }
+        }
+      }
+    }
+  `)
+
+  if (graphqlResult.errors) {
+    reporter.panicOnBuild(
+      `There was an error loading your markdown files`,
+      graphqlResult.errors
+    )
+    return
+  }
+  return graphqlResult.data.allMarkdownRemark.edges
 }
