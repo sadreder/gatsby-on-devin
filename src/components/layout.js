@@ -1,6 +1,7 @@
 import React from "react"
 import { Link, useStaticQuery, graphql } from "gatsby"
 import parse from "html-react-parser"
+import NavBar from "./nav-bar"
 
 const Layout = ({ isHomePage, children }) => {
   const {
@@ -20,6 +21,7 @@ const Layout = ({ isHomePage, children }) => {
 
   return (
     <div className="global-wrapper" data-is-root-path={isHomePage}>
+      <NavBar />
       <header className="global-header">
         {isHomePage ? (
           <h1 className="main-heading">
