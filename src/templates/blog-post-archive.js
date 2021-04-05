@@ -1,10 +1,11 @@
 import React from "react"
-import { Link, graphql } from "gatsby"
+import { Link, graphql, navigate } from "gatsby"
 import parse from "html-react-parser"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import { isLoggedIn } from "../services/auth"
 
 const BlogIndex = ({
   data,
@@ -23,6 +24,11 @@ const BlogIndex = ({
         </p>
       </Layout>
     )
+  }
+
+  if (!isLoggedIn()) {
+    navigate("/app/login")
+    return null
   }
 
   return (
