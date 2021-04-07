@@ -23,7 +23,9 @@ export default function NavBar() {
         <Link to="/">Home</Link>
         {` | `}
         <Link to="/app/profile">Profile</Link>
-        {` | `}        
+        {` | `}
+        {isLoggedIn() ? <Link to="/app/blog">Blog</Link> : null}
+        {` | `}
         {isLoggedIn() ? (
           <a
             href="/"
