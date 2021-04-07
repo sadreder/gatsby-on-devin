@@ -1,7 +1,8 @@
 import React from "react"
-import { Link, graphql } from "gatsby"
+import { Link, graphql, navigate } from "gatsby"
 import Image from "gatsby-image"
 import parse from "html-react-parser"
+import { isLoggedIn } from "../services/auth"
 
 // We're using Gutenberg so we need the block styles
 import "@wordpress/block-library/build-style/style.css"
@@ -15,6 +16,11 @@ const BlogPostTemplate = ({ data: { previous, next, post } }) => {
   const featuredImage = {
     fluid: post.featuredImage?.node?.localFile?.childImageSharp?.fluid,
     alt: post.featuredImage?.node?.alt || ``,
+  }
+
+  if (!isLoggedIn()) {
+    navigate("/app/login")
+    return null
   }
 
   return (

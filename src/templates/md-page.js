@@ -1,9 +1,16 @@
 import React from "react"
-import { graphql } from "gatsby"
+import { graphql, navigate } from "gatsby"
 import Layout from "../components/layout"
+import { isLoggedIn } from "../services/auth"
 
 export default function MarkdownPage({ data }) {
   const page = data.markdownRemark
+
+  if (!isLoggedIn()) {
+    navigate("/app/login")
+    return null
+  }
+
   return (
     <Layout>
       <div>
