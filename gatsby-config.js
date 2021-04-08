@@ -26,8 +26,8 @@ module.exports = {
       resolve: `gatsby-source-wordpress`,
       options: {
         // the only required plugin option for WordPress is the GraphQL url.
-        url: `http://localhost:10004/graphql`,
-        //url: `http://devin/clip/graphql`,
+        //url: `http://localhost:10004/graphql`,
+        url: `http://devin.lge.com/clip/graphql`,
         type: {
           __all: {
             limit: process.env.NODE_ENV === `development` ? 50 : null,

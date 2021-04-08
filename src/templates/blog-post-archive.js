@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Link, graphql, navigate } from "gatsby"
 import parse from "html-react-parser"
 
@@ -26,10 +26,12 @@ const BlogIndex = ({
     )
   }
 
-  if (!isLoggedIn()) {
-    navigate("/app/login")
-    return null
-  }
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      navigate("/app/login")
+      return null
+    }
+  })
 
   return (
     <Layout isHomePage>
