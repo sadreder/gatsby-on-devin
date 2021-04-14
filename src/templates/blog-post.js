@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Link, graphql, navigate } from "gatsby"
 import Image from "gatsby-image"
 import parse from "html-react-parser"
@@ -18,10 +18,12 @@ const BlogPostTemplate = ({ data: { previous, next, post } }) => {
     alt: post.featuredImage?.node?.alt || ``,
   }
 
-  if (!isLoggedIn()) {
-    navigate("/app/login")
-    return null
-  }
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      navigate("/app/login")
+      return null
+    }
+  })
 
   return (
     <Layout>
