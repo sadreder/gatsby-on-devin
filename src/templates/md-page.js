@@ -1,17 +1,15 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { graphql, navigate } from "gatsby"
 import Layout from "../components/layout"
-import { isLoggedIn } from "../services/auth"
+import { isBrowser, isLoggedIn } from "../services/auth"
 
 export default function MarkdownPage({ data }) {
   const page = data.markdownRemark
 
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      navigate("/app/login")
-      return null
-    }
-  })
+  if (isBrowser() && !isLoggedIn()) {
+    navigate("/app/login")
+    return null
+  }
 
   return (
     <Layout>

@@ -1,8 +1,8 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { Link, graphql, navigate } from "gatsby"
 import Image from "gatsby-image"
 import parse from "html-react-parser"
-import { isLoggedIn } from "../services/auth"
+import { isBrowser, isLoggedIn } from "../services/auth"
 
 // We're using Gutenberg so we need the block styles
 import "@wordpress/block-library/build-style/style.css"
@@ -10,7 +10,7 @@ import "@wordpress/block-library/build-style/theme.css"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
-import SEO from "../components/seo"
+import Seo from "../components/seo"
 
 const BlogPostTemplate = ({ data: { previous, next, post } }) => {
   const featuredImage = {
@@ -18,16 +18,14 @@ const BlogPostTemplate = ({ data: { previous, next, post } }) => {
     alt: post.featuredImage?.node?.alt || ``,
   }
 
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      navigate("/app/login")
-      return null
-    }
-  })
+  if (isBrowser() && !isLoggedIn()) {
+    navigate("/app/login")
+    return null
+  }
 
   return (
     <Layout>
-      <SEO title={post.title} description={post.excerpt} />
+      <Seo title={post.title} description={post.excerpt} />
 
       <article
         className="blog-post"

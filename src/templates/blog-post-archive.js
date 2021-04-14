@@ -1,11 +1,11 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { Link, graphql, navigate } from "gatsby"
 import parse from "html-react-parser"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
-import SEO from "../components/seo"
-import { isLoggedIn } from "../services/auth"
+import Seo from "../components/seo"
+import { isBrowser, isLoggedIn } from "../services/auth"
 
 const BlogIndex = ({
   data,
@@ -16,7 +16,7 @@ const BlogIndex = ({
   if (!posts.length) {
     return (
       <Layout isHomePage>
-        <SEO title="All posts" />
+        <Seo title="All posts" />
         <Bio />
         <p>
           No blog posts found. Add posts to your WordPress site and they'll
@@ -26,16 +26,14 @@ const BlogIndex = ({
     )
   }
 
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      navigate("/app/login")
-      return null
-    }
-  })
+  if (isBrowser() && !isLoggedIn()) {
+    navigate("/app/login")
+    return null
+  }
 
   return (
     <Layout isHomePage>
-      <SEO title="All posts" />
+      <Seo title="All posts" />
 
       <Bio />
 
